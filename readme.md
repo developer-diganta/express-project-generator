@@ -6,26 +6,10 @@
   **Express Project Generator helps you generate a skeletal structure for your  express js project. Made with nodejs.**
   
 
-
-
-<!-- ## Permissions
-
-Permissions include tabs and active tabs which helps to manipulate the styles of the web page. **NO DATA IS USED BY US.** -->
-
-
-<!-- <h2 align='center'> Project Admin </h2>
-<table align='center'>
-<tr>
-    <td align="center">
-        <a href="https://github.com/developer-diganta">
-            <img src="https://avatars.githubusercontent.com/u/65999534?v=4" width="100;" alt="Diganta Kr Banik"/>
-            <br />
-            <sub><b>Diganta Kr Banik</b></sub>
-        </a>
-    </td>
-  </tr>
-</table> -->
-
+## Using express project generator
+```bash
+npx express-project-generator
+```
 
 # Contributing
 
