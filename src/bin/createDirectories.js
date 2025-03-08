@@ -13,11 +13,12 @@ const chalk = require("chalk")
  * @param {string} projectName - The name of the project to create directories for.
  */
 
-const  createDirectories = async (projectName)=> {
+const  createDirectories = async (projectName, progressCallback)=> {
     try {
         await createDirectory(`${projectName}/src`);
         console.log(chalk.green('Created src folder'));
-        await createSubdirectories(projectName);
+        progressCallback();
+        await createSubdirectories(projectName, progressCallback);
     } catch (error) {
         console.error(chalk.red(`Error creating directories: ${error}`));
         throw error;
