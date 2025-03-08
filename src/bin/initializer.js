@@ -9,12 +9,14 @@ const chalk = require("chalk")
  * 
  * @param {string} projectName - The name of the project to initialize.
  */
-const initializeProject = async (projectName) => {
+const initializeProject = async (projectName, progressCallback) => {
     try {
         const cmd = `npm init -y`;
-        createDirectory(projectName)
+        await createDirectory(projectName)
+        progressCallback();
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
         console.log(chalk.green(`npm: ${stdout}`));
+        progressCallback();
     } catch (error) {
         console.error(chalk.red(`Error initializing project: ${error}`));
         throw error;

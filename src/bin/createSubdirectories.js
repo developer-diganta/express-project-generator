@@ -10,7 +10,7 @@ const chalk = require("chalk")
  * @param {string} projectName - The name of the project to create subdirectories for.
  */
 
-const createSubdirectories=async(projectName) =>{
+const createSubdirectories=async(projectName, progressCallback) =>{
     const directories = [
         `${projectName}/src/controllers`,
         `${projectName}/src/services`,
@@ -25,6 +25,7 @@ const createSubdirectories=async(projectName) =>{
         for (const dir of directories) {
             await createDirectory(dir);
             console.log(chalk.green(`Created folder ${dir}`));
+            progressCallback();
         }
     } catch (error) {
         console.error(chalk.red(`Error creating subdirectories: ${error}`));

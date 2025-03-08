@@ -11,14 +11,15 @@ const chalk = require("chalk")
  * @param {string} projectName - The name of the project to create files for.
  */
 
-async function createFiles(projectName) {
+async function createFiles(projectName, progressCallback) {
     try {
         await createFile(`${projectName}/src/server.js`, '');
         console.log(chalk.green("Created server.js"));
+        progressCallback();
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
+        progressCallback();
         console.log(chalk.green('Project generated successfully!'));
-        process.exit(0);
     } catch (error) {
         console.error(chalk.red(`Error creating files: ${error}`));
         throw error;
