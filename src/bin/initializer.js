@@ -23,4 +23,22 @@ const initializeProject = async (projectName, progressCallback) => {
     }
 }
 
-module.exports = initializeProject;
+/**
+ * Installs the dependencies for a new Node.js project.
+ * This function runs 'npm install express dotenv cors -D nodemon' to install
+ * the Express.js framework, the dotenv library, the cors middleware, and nodemon.
+ * 
+ * @param {string} projectName 
+ */
+const installDependencies = async (projectName) => {
+    try {
+        const cmd = `npm install express dotenv cors && npm install -D nodemon`;
+        const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
+        console.log(chalk.green(`npm: ${stdout}`));
+    } catch (error) {
+        console.error(chalk.red(`Error installing dependencies: ${error}`));
+        throw error;
+    }
+}
+
+module.exports = {initializeProject, installDependencies};
