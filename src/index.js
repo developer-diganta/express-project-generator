@@ -19,6 +19,7 @@ if (args.includes('--help')) {
     console.log(`Usage: node ${scriptName} [options]`);
     console.log('Options:');
     console.log('  --help       Show this help message');
+    console.log('  --version    Show version number');
     process.exit(0);
 }
 
