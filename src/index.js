@@ -22,6 +22,12 @@ if (args.includes('--help')) {
     process.exit(0);
 }
 
+if (args.includes('--version')) {
+    const packageJson = require('../package.json');
+    console.log("Express Project Generator: v" + packageJson.version);
+    process.exit(0);
+}
+
 let projectName = "my-app";
 
 console.log(chalk.blue("Enter Project Name: "));
