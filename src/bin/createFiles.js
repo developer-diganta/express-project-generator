@@ -45,12 +45,15 @@ app.listen(PORT, () => {
  * @param {string} projectName - The name of the project to create files for.
  */
 
-async function createFiles(projectName) {
+async function createFiles(projectName, progressCallback) {
     try {
         await createFile(`${projectName}/src/server.js`, boilerplateServerCode);
         console.log(chalk.green("Created server.js"));
+        progressCallback();
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
+        progressCallback();
+        console.log(chalk.green('Project generated successfully!'));
     } catch (error) {
         console.error(chalk.red(`Error creating files: ${error}`));
         throw error;
