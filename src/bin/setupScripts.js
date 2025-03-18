@@ -9,11 +9,16 @@ const chalk = require("chalk")
  * 
  * @param {string} projectName The name of the project to setup scripts for
  */
-const setupScripts = async (projectName) => {
+const setupScripts = async (projectName, testLibraries) => {
     try {
         const script = await readFile(`${projectName}/package.json`);
         const parsedScript = JSON.parse(script);
-        parsedScript.scripts = {};
+        parsedScript.scripts = {
+            dev: "nodemon src/server.js",
+            start: "node src/server.js"
+        };
+        if (testLibraries.jest) parsedScript.scripts.test = "jest";
+        if (testLibraries.mocha) parsedScript.scripts.test = "mocha test/**/*.js";
         parsedScript.scripts.dev = "nodemon src/server.js";
         parsedScript.scripts.start = "nodemon src/server.js";
         await createFile(`${projectName}/package.json`, JSON.stringify(parsedScript, null, 2));
