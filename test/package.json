@@ -1,0 +1,25 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "nodemon src/server.js",
+    "test": "mocha test/**/*.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "chai": "^5.2.0",
+    "chai-http": "^5.1.1",
+    "mocha": "^11.1.0",
+    "nodemon": "^3.1.9"
+  }
+}
