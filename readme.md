@@ -6,14 +6,9 @@
   **Express Project Generator helps you generate a skeletal structure for your  express js project. Made with nodejs.**
   
 
-## Using express project generator with jest
+## Using express project generator
 ```bash
-npx express-project-generator --jest
-```
-
-## Using express project generator with mocha
-```bash
-npx express-project-generator --mocha
+npx express-project-generator
 ```
 
 # Contributing
