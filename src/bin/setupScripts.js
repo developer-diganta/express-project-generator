@@ -10,13 +10,18 @@ import chalk from "chalk";
  * 
  * @param {string} projectName The name of the project to setup scripts for.
  */
+
 export const setupScripts = async (projectName) => {
+
+const setupScripts = async (projectName, testLibraries) => {
+
     try {
         const packageJsonPath = `${projectName}/package.json`;
 
         // Read the package.json file
         const script = await readFile(packageJsonPath);
         const parsedScript = JSON.parse(script);
+
 
         // Ensure scripts exist or merge with existing ones
         parsedScript.scripts = {
@@ -28,6 +33,18 @@ export const setupScripts = async (projectName) => {
         // Write updated package.json file
         await createFile(packageJsonPath, JSON.stringify(parsedScript, null, 2));
         console.log(chalk.green(`Scripts added successfully in ${packageJsonPath}`));
+
+        parsedScript.scripts = {
+            dev: "nodemon src/server.js",
+            start: "node src/server.js"
+        };
+        if (testLibraries.jest) parsedScript.scripts.test = "jest";
+        if (testLibraries.mocha) parsedScript.scripts.test = "mocha test/**/*.js";
+        parsedScript.scripts.dev = "nodemon src/server.js";
+        parsedScript.scripts.start = "nodemon src/server.js";
+        await createFile(`${projectName}/package.json`, JSON.stringify(parsedScript, null, 2));
+        console.log(chalk.green("Setup scripts successfully!"));
+
     } catch (error) {
         console.error(chalk.red(`Error setting up scripts: ${error.message}`));
         throw error;

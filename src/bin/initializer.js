@@ -31,10 +31,19 @@ export const initializeProject = async (projectName, progressCallback) => {
  * 
  * @param {string} projectName - The name of the project.
  */
+
 export const installDependencies = async (projectName) => {
     try {
         const cmd = `npm install express dotenv cors && npm install -D nodemon`;
         const { stdout } = await executeCommand(cmd, `./${projectName}`);
+
+const installDependencies = async (projectName, testLibraries) => {
+    try {
+        let cmd = `npm install express dotenv cors && npm install -D nodemon`;
+        if (testLibraries.jest) cmd += ' jest supertest';
+        if (testLibraries.mocha) cmd += ' mocha chai chai-http';
+        const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
+
         console.log(chalk.green(`npm: ${stdout}`));
     } catch (error) {
         console.error(chalk.red(`Error installing dependencies: ${error}`));
