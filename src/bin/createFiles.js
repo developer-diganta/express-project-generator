@@ -1,14 +1,15 @@
-const createFile = require("../utils/createFile");
-const chalk = require("chalk");
+import createFile from "../utils/createFile.js";
+import chalk from "chalk";
 
 /*
  * Boilerplate code for the main server file 'server.js'.
-*/
+ */
 const boilerplateServerCode = `
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-require('dotenv').config(); // Load environment variables from .env file
+dotenv.config(); // Load environment variables from .env file
 
 const app = express(); // Create an Express.js app
 const PORT = process.env.PORT || 3000; // Set the port for the server
@@ -33,19 +34,15 @@ app.use((err, req, res, next) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(\`Server is running on http://localhost:\${PORT}/\`);
-});`
+});
+`;
 
 /**
  * Creates necessary files for the specified project.
- * This function creates essential files within the project directory,
- * such as 'server.js' for the main server file and 'readme.md' for
- * project documentation. It also logs the creation of each file and
- * success message upon completion.
- * 
  * @param {string} projectName - The name of the project to create files for.
+ * @param {Function} progressCallback - Callback to indicate progress.
  */
-
-async function createFiles(projectName, progressCallback) {
+export async function createFiles(projectName, progressCallback) {
     try {
         await createFile(`${projectName}/src/server.js`, boilerplateServerCode);
         console.log(chalk.green("Created server.js"));
@@ -59,5 +56,3 @@ async function createFiles(projectName, progressCallback) {
         throw error;
     }
 }
-
-module.exports = createFiles;

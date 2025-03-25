@@ -1,5 +1,5 @@
-const createDirectory = require("../utils/createDirectory");
-const chalk = require("chalk")
+import createDirectory from "../utils/createDirectory.js";
+import chalk from "chalk";
 
 /**
  * Creates subdirectories for the specified project.
@@ -9,8 +9,7 @@ const chalk = require("chalk")
  * 
  * @param {string} projectName - The name of the project to create subdirectories for.
  */
-
-const createSubdirectories=async(projectName, progressCallback) =>{
+const createSubdirectories = async (projectName, progressCallback) => {
     const directories = [
         `${projectName}/src/controllers`,
         `${projectName}/src/services`,
@@ -31,6 +30,6 @@ const createSubdirectories=async(projectName, progressCallback) =>{
         console.error(chalk.red(`Error creating subdirectories: ${error}`));
         throw error;
     }
-}
+};
 
-module.exports = createSubdirectories;
+export default createSubdirectories; // Changed named export to default export

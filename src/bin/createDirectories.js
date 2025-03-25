@@ -1,19 +1,13 @@
-const createDirectory = require("../utils/createDirectory");
-const createSubdirectories = require("./createSubdirectories");
-const chalk = require("chalk")
+import createDirectory from "../utils/createDirectory.js";  // ✅ No curly braces
+import createSubdirectories from "./createSubdirectories.js";
+import chalk from "chalk";
 
 /**
  * Creates directories and subdirectories for the specified project.
- * This function creates the main 'src' directory for the project,
- * and then invokes the 'createSubdirectories' function to create
- * additional subdirectories within the 'src' directory. It logs the
- * creation of the 'src' directory and any errors encountered during
- * the process.
  * 
  * @param {string} projectName - The name of the project to create directories for.
  */
-
-const  createDirectories = async (projectName, progressCallback)=> {
+export async function createDirectories(projectName, progressCallback) {
     try {
         await createDirectory(`${projectName}/src`);
         console.log(chalk.green('Created src folder'));
@@ -24,5 +18,3 @@ const  createDirectories = async (projectName, progressCallback)=> {
         throw error;
     }
 }
-
-module.exports = createDirectories;
