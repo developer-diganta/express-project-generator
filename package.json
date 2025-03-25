@@ -13,6 +13,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "deployment": "^0.2.3",
+    "inquirer": "^12.5.0",
+    "jest": "^29.7.0",
+    "mocha": "^11.1.0"
   }
 }
