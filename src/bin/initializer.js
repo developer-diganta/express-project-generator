@@ -30,11 +30,17 @@ const initializeProject = async (projectName, progressCallback) => {
  * 
  * @param {string} projectName 
  */
-const installDependencies = async (projectName, testLibraries) => {
+const installDependencies = async (projectName, testLibraries, language) => {
     try {
-        let cmd = `npm install express dotenv cors && npm install -D nodemon`;
+        let cmd = `npm install express dotenv cors`;
+        if (language === 'TypeScript') {
+            cmd += ` @types/express @types/cors @types/node typescript ts-node`;
+        }
+        cmd += ` && npm install -D nodemon${language === 'TypeScript' ? ' ts-node-dev' : ''}`;
         if (testLibraries.jest) cmd += ' jest supertest';
+        if (testLibraries.jest && language === 'TypeScript') cmd += ' @types/jest ts-jest';
         if (testLibraries.mocha) cmd += ' mocha chai chai-http';
+        if (testLibraries.mocha && language === 'TypeScript') cmd += ' @types/mocha @types/chai @types/chai-http';
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
         console.log(chalk.green(`npm: ${stdout}`));
     } catch (error) {

@@ -2,12 +2,24 @@ const createDirectory = require("../utils/createDirectory");
 const createFile = require("../utils/createFile");
 const chalk = require("chalk");
 
-async function setupTests(projectName, testLibraries) {
+async function setupTests(projectName, testLibraries,language) {
     try {
         if (testLibraries.jest) {
+            const testExt = language === 'TypeScript' ? 'ts' : 'js';
+            const jestConfig = language === 'TypeScript' ? `module.exports = {
+                preset: 'ts-jest',
+                testEnvironment: 'node',
+            };` : '';
+
+            if (language === 'TypeScript') {
+                await createFile(`${projectName}/jest.config.js`, jestConfig);
+            }
             await createDirectory(`${projectName}/src/__tests__`);
-            const jestTestCode = `const request = require('supertest');
-const app = require('../server');
+            const jestTestCode = language === 'TypeScript' ? 
+                `import request from 'supertest';
+import app from '../server';` 
+                : `const request = require('supertest');
+const app = require('../server');;
 
 describe('GET /', () => {
     it('responds with json', async () => {
