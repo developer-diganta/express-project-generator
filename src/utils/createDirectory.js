@@ -1,21 +1,20 @@
-const fs = require("fs");
+import { mkdir } from "fs/promises";
+import chalk from "chalk";
+
 /**
  * Creates a directory with the specified path.
  * 
  * @param {string} directory - The path of the directory to create.
  * @returns {Promise<void>} A Promise that resolves when the directory is successfully created.
  */
-
 const createDirectory = async (directory) => {
-    return new Promise((resolve, reject) => {
-        fs.mkdir(directory, { recursive: true }, (error) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            resolve();
-        });
-    });
-}
+    try {
+        await mkdir(directory, { recursive: true });
+        console.log(chalk.green(`Created directory: ${directory}`));
+    } catch (error) {
+        console.error(chalk.red(`Failed to create directory: ${directory}`));
+        throw error;
+    }
+};
 
-module.exports = createDirectory;
+export default createDirectory; // ES module export

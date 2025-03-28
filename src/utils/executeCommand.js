@@ -1,4 +1,6 @@
-const { exec } = require('child_process');
+import { exec } from "child_process";
+import chalk from "chalk";
+
 /**
  * Executes a shell command in the specified folder path.
  * 
@@ -9,14 +11,20 @@ const { exec } = require('child_process');
 
 const executeCommand = async (cmd, folderPath) => {
     return new Promise((resolve, reject) => {
-        exec(cmd, { cwd: folderPath },(error, stdout, stderr) => {
+        exec(cmd, { cwd: folderPath }, (error, stdout, stderr) => {
             if (error) {
+                console.error(chalk.red(`Command failed: ${cmd}`));
+                console.error(chalk.red(`Error: ${error.message}`));
                 reject(error);
                 return;
             }
+            if (stderr) {
+                console.warn(chalk.yellow(`Warning: ${stderr}`));
+            }
+            console.log(chalk.green(`Executed: ${cmd}`));
             resolve({ stdout, stderr });
         });
     });
-}
+};
 
-module.exports = executeCommand;
+export default executeCommand; // ✅ Exporting as default (ESM)
