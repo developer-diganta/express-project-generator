@@ -11,7 +11,7 @@
   "keywords": [],
   "author": "Diganta Kr Banik",
   "license": "ISC",
-  "description": "<p align=\"center\">     <h1 align=\"center\"/>Express Project Generator</h1>   </p>",
+  "description": "",
   "dependencies": {
     "chalk": "^4.1.2",
     "deployment": "^0.2.3",
