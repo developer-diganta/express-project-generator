@@ -11,7 +11,7 @@ const chalk = require("chalk")
  */
 const initializeProject = async (projectName, progressCallback) => {
     try {
-        const cmd = `npm init -y`;
+        const cmd = `npm init -y > nul 2>&1`;
         await createDirectory(projectName)
         progressCallback();
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
@@ -36,7 +36,7 @@ const installDependencies = async (projectName, testLibraries) => {
         if (testLibraries.jest) cmd += ' jest supertest';
         if (testLibraries.mocha) cmd += ' mocha chai chai-http';
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
-        console.log(chalk.green(`npm: ${stdout}`));
+        // console.log(chalk.green(`npm: ${stdout}`));
     } catch (error) {
         console.error(chalk.red(`Error installing dependencies: ${error}`));
         throw error;
