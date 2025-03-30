@@ -46,6 +46,36 @@ async function main() {
             default: 'JavaScript'
         },
         {
+            type: 'input',
+            name: 'authorName',
+            message: 'Enter Author Name:',
+            default: 'Anonymous'
+        },
+        {
+            type: 'input',
+            name: 'version',
+            message: 'Enter Version:',
+            default: '1.0.0'
+        },
+        {
+            type: 'input',
+            name: 'description',
+            message: 'Enter Description:',
+            default: ''
+        },
+        {
+            type: 'input',
+            name: 'license',
+            message: 'Enter License:',
+            default: 'ISC'
+        },
+        {
+            type: 'string',
+            name:'start',
+            message: 'Enter Start Command:',
+            default: 'node src/server.js'
+        },
+        {
             type: 'confirm',
             name: 'addTests',
             message: 'Would you like to add test scripts?',
@@ -62,6 +92,11 @@ async function main() {
 
     const projectName = responses.projectName;
     const language = responses.language;
+    const authorName = responses.authorName;
+    const version = responses.version;
+    const description = responses.description;  
+    const license = responses.license;
+    const start = responses.start;
     const testLibraries = {
         jest: responses.testFramework === 'Jest',
         mocha: responses.testFramework === 'Mocha'
@@ -89,9 +124,14 @@ async function main() {
         await installDependencies(projectName, testLibraries, language);
         await createDirectories(projectName, updateProgress);
         await createFiles(projectName, updateProgress,language);
-        await setupScripts(projectName, testLibraries, updateProgress,language);
+        await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
         await setupTests(projectName, testLibraries, updateProgress,language);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
+        console.log(chalk.green.bold(`Author: ${authorName}`)); 
+        console.log(chalk.green.bold(`Version: ${version}`));
+        console.log(chalk.green.bold(`Description: ${description}`));
+        console.log(chalk.green.bold(`License: ${license}`));
+
     } catch (error) {
         console.error(`Error generating project: ${error}`);
         process.exit(1);
