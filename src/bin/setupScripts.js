@@ -37,7 +37,11 @@ const setupScripts = async (projectName,authorName,version , description,license
         parsedScript.description = description;
         parsedScript.license = license;
         if (testLibraries.jest) parsedScript.scripts.test = "jest";
-        if (testLibraries.mocha) parsedScript.scripts.test = "mocha test/**/*.js";
+        if (testLibraries.mocha) {
+            parsedScript.scripts.test = language === 'TypeScript' 
+            ? "mocha --require ts-node/register test/**/*.test.ts"
+            : "mocha test/**/*.test.js";
+        }
         parsedScript.scripts.dev = "nodemon src/server.js";
         parsedScript.scripts.start = start;
 
