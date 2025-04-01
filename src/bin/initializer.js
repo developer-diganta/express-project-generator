@@ -1,6 +1,6 @@
-const createDirectory = require("../utils/createDirectory");
-const executeCommand = require("../utils/executeCommand");
-const chalk = require("chalk")
+import createDirectory from "../utils/createDirectory.js"; // Default import
+import executeCommand from "../utils/executeCommand.js"; // Default import
+import chalk from "chalk";
 
 /**
  * Initializes a new Node.js project with the specified project name.
@@ -8,29 +8,45 @@ const chalk = require("chalk")
  * to generate a default package.json file, and logs the output.
  * 
  * @param {string} projectName - The name of the project to initialize.
+ * @param {Function} progressCallback - Callback to track progress.
  */
-const initializeProject = async (projectName, progressCallback) => {
+export const initializeProject = async (projectName, progressCallback) => {
     try {
+
+        const cmd = `npm init -y`;
+        await createDirectory(projectName);
+
         const cmd = `npm init -y > nul 2>&1`;
         await createDirectory(projectName)
+
         progressCallback();
-        const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
+        const { stdout } = await executeCommand(cmd, `./${projectName}`);
         console.log(chalk.green(`npm: ${stdout}`));
         progressCallback();
     } catch (error) {
         console.error(chalk.red(`Error initializing project: ${error}`));
         throw error;
     }
-}
+};
 
 /**
  * Installs the dependencies for a new Node.js project.
  * This function runs 'npm install express dotenv cors -D nodemon' to install
  * the Express.js framework, the dotenv library, the cors middleware, and nodemon.
  * 
- * @param {string} projectName 
+ * @param {string} projectName - The name of the project.
  */
+
+
+export const installDependencies = async (projectName) => {
+    try {
+        const cmd = `npm install express dotenv cors && npm install -D nodemon`;
+        const { stdout } = await executeCommand(cmd, `./${projectName}`);
+
+const installDependencies = async (projectName, testLibraries) => {
+
 const installDependencies = async (projectName, testLibraries, language) => {
+
     try {
         let cmd = `npm install express dotenv cors`;
         if (language === 'TypeScript') {
@@ -42,11 +58,14 @@ const installDependencies = async (projectName, testLibraries, language) => {
         if (testLibraries.mocha) cmd += ' mocha chai chai-http';
         if (testLibraries.mocha && language === 'TypeScript') cmd += ' @types/mocha @types/chai @types/chai-http';
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
-        // console.log(chalk.green(`npm: ${stdout}`));
+
+
+        console.log(chalk.green(`npm: ${stdout}`));
+
+       
+
     } catch (error) {
         console.error(chalk.red(`Error installing dependencies: ${error}`));
         throw error;
     }
-}
-
-module.exports = {initializeProject, installDependencies};
+};
