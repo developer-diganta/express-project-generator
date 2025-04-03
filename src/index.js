@@ -41,7 +41,7 @@ async function main() {
         {
             type: 'list',
             name: 'language',
-            message: 'Which language would you like to use?',
+            message: 'Choose project language:',
             choices: ['JavaScript', 'TypeScript'],
             default: 'JavaScript'
         },
@@ -106,7 +106,6 @@ async function main() {
     const description = responses.description;  
     const license = responses.license;
     const start = responses.start;
-
     const testLibraries = {
         jest: responses.testFramework === 'Jest',
         mocha: responses.testFramework === 'Mocha'
@@ -137,7 +136,7 @@ async function main() {
         await initializeProject(projectName,updateProgress);
         await installDependencies(projectName, testLibraries ,installJsonwebtoken, language);
         await createDirectories(projectName, updateProgress);
-        await createFiles(projectName, updateProgress,installJsonwebtoken,language);
+        await createFiles(projectName, updateProgress,language,installJsonwebtoken);
         await setupScripts(projectName,authorName,version , description,license,start, testLibraries,updateProgress, language);
         await setupTests(projectName , testLibraries ,updateProgress, language);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));

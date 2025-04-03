@@ -14,21 +14,34 @@ const chalk = require("chalk")
  * @param {string} license The license of the package
  * @param {string} start The start of the package
  */
-const setupScripts = async (projectName,authorName,version,description, license,start,testLibraries) => {
+
+const setupScripts = async (projectName,authorName,version , description,license,start, testLibraries, updateProgress,language) => {
     try {
         const script = await readFile(`${projectName}/package.json`);
         const parsedScript = JSON.parse(script);
-        parsedScript.scripts = {
-            dev: "nodemon src/server.js",
-            start: "node src/server.js"
-        };
+        if (language === 'TypeScript') {
+            parsedScript.scripts = {
+                dev: "ts-node-dev src/server.ts",
+                build: "tsc",
+                start: "node dist/server.js",
+                test: "jest"
+            };
+        } else {
+            parsedScript.scripts = {
+                dev: "nodemon src/server.js",
+                start: "node src/server.js"
+            };
+        }
         parsedScript.author = authorName;
         parsedScript.version = version;
         parsedScript.description = description;
         parsedScript.license = license;
-
         if (testLibraries.jest) parsedScript.scripts.test = "jest";
-        if (testLibraries.mocha) parsedScript.scripts.test = "mocha test/**/*.js";
+        if (testLibraries.mocha) {
+            parsedScript.scripts.test = language === 'TypeScript' 
+            ? "mocha --require ts-node/register test/**/*.test.ts"
+            : "mocha test/**/*.test.js";
+        }
         parsedScript.scripts.dev = "nodemon src/server.js";
         parsedScript.scripts.start = start;
 
