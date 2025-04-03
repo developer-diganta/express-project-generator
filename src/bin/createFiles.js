@@ -4,9 +4,10 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = `
+const boilerplateServerCode = (installJsonwebtoken) =>  `
 const express = require('express');
 const cors = require('cors');
+${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
 
 require('dotenv').config(); // Load environment variables from .env file
 
@@ -47,9 +48,9 @@ module.exports = app;`
  * @param {string} projectName - The name of the project to create files for.
  */
 
-async function createFiles(projectName, progressCallback) {
+async function createFiles(projectName, progressCallback,installJsonwebtoken) {
     try {
-        await createFile(`${projectName}/src/server.js`, boilerplateServerCode);
+        await createFile(`${projectName}/src/server.js`, boilerplateServerCode(installJsonwebtoken));
         console.log(chalk.green("Created server.js"));
         progressCallback();
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
