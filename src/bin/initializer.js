@@ -30,7 +30,7 @@ const initializeProject = async (projectName, progressCallback) => {
  * 
  * @param {string} projectName 
  */
-const installDependencies = async (projectName, testLibraries, language) => {
+const installDependencies = async (projectName, testLibraries ,installJsonwebtoken,language) => {
     try {
         let cmd = `npm install express dotenv cors`;
         if (language === 'TypeScript') {
@@ -40,6 +40,8 @@ const installDependencies = async (projectName, testLibraries, language) => {
         if (testLibraries.jest) cmd += ' jest supertest';
         if (testLibraries.jest && language === 'TypeScript') cmd += ' @types/jest ts-jest';
         if (testLibraries.mocha) cmd += ' mocha chai chai-http';
+        if (installJsonwebtoken) cmd += ' jsonwebtoken';
+        if (installJsonwebtoken && language === 'TypeScript') cmd += ' @types/jsonwebtoken';
         if (testLibraries.mocha && language === 'TypeScript') cmd += ' @types/mocha @types/chai @types/chai-http';
         const { stdout, stderr } = await executeCommand(cmd, `./${projectName}`);
         // console.log(chalk.green(`npm: ${stdout}`));

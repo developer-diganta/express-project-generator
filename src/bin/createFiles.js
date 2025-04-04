@@ -4,9 +4,10 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = `
+const boilerplateServerCode = (installJsonwebtoken) =>  `
 const express = require('express');
 const cors = require('cors');
+${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
 
 require('dotenv').config(); // Load environment variables from .env file
 
@@ -59,9 +60,10 @@ const tsConfig = `{
   }
 }`;
   
-const tsBoilerplate = `import express from 'express';
+const tsBoilerplate = (installJsonwebtoken) =>`import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+${installJsonwebtoken === 'JWT' ?  "import jwt from 'jsonwebtoken';":""} 
 
 dotenv.config();
 
@@ -88,10 +90,10 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-async function createFiles(projectName, progressCallback,language) {
+async function createFiles(projectName, progressCallback,language ,installJsonwebtoken) {
     try {
         const ext = language === 'TypeScript' ? 'ts' : 'js';
-        const boilerplate = language === 'TypeScript' ? tsBoilerplate : boilerplateServerCode;
+        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken) : boilerplateServerCode(installJsonwebtoken);
         await createFile(`${projectName}/src/server.${ext}`, boilerplate);
         console.log(chalk.green("Created server.js"));
         progressCallback();
