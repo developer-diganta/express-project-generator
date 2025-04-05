@@ -4,7 +4,7 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = (installJsonwebtoken) =>  `
+const boilerplateServerCode = (installJsonwebtoken ,addDatabase) =>  `
 const express = require('express');
 const cors = require('cors');
 ${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
@@ -65,6 +65,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 ${installJsonwebtoken === 'JWT' ?  "import jwt from 'jsonwebtoken';":""} 
 
+
 dotenv.config();
 
 const app = express();
@@ -90,16 +91,54 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-async function createFiles(projectName, progressCallback,language ,installJsonwebtoken) {
+const dbConfig = (language) => `
+${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('MongoDB connected successfully');
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
+`;
+
+const userModel = (language) => `
+${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
+
+const userSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', userSchema);
+`;
+
+async function createFiles(projectName, progressCallback,language ,installJsonwebtoken,addDatabase) {
     try {
         const ext = language === 'TypeScript' ? 'ts' : 'js';
-        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken) : boilerplateServerCode(installJsonwebtoken);
+        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken, addDatabase) : boilerplateServerCode(installJsonwebtoken,addDatabase);
         await createFile(`${projectName}/src/server.${ext}`, boilerplate);
         console.log(chalk.green("Created server.js"));
         progressCallback();
         if (language === 'TypeScript') {
             await createFile(`${projectName}/tsconfig.json`, tsConfig);
             console.log(chalk.green("Created tsconfig.json"));
+            progressCallback();
+        }
+        if (addDatabase === 'MongoDB') {
+            await createFile(`${projectName}/src/configs/db.js`, dbConfig(language));
+            console.log(chalk.green("Created db.js"));
+            progressCallback();
+            await createFile(`${projectName}/src/models/userModel.js`, userModel(language));
+            console.log(chalk.green("Created user.js"));
             progressCallback();
         }
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
