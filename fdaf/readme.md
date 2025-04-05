@@ -1,1 +1,0 @@
-# Project created using express-app-generator
