@@ -104,6 +104,7 @@ async function createFiles(projectName, progressCallback,language ,installJsonwe
             console.log(chalk.green("Created tsconfig.json"));
             progressCallback();
         }
+        
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
         progressCallback();
