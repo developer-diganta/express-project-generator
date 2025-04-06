@@ -15,9 +15,6 @@ const chalk = require("chalk")
 
 const  createDirectories = async (projectName, progressCallback, modules = [])=> {
     try {
-        await createDirectory(`${projectName}/src`);
-        console.log(chalk.green('Created src folder'));
-        progressCallback();
         if (modules.length > 0) {
             // Create module directories
             for (const module of modules) {
@@ -28,6 +25,9 @@ const  createDirectories = async (projectName, progressCallback, modules = [])=>
                 await createSubdirectories(modulePath, progressCallback);
             }
         } else {
+            await createDirectory(`${projectName}/src`);
+            console.log(chalk.green('Created src folder'));
+            progressCallback();
             await createSubdirectories(`${projectName}/src`, progressCallback);
         }
     } catch (error) {

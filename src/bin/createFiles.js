@@ -106,10 +106,19 @@ async function createFiles(projectName, progressCallback, language, modules = []
           progressCallback();
         }
   
-        // Create server.js routes
-        await createFile(`${projectName}/src/server.${ext}`, boilerplate);
-        console.log(chalk.green("Created server.js"));
-        progressCallback();
+        if (modules.length === 0) {
+          // For monolithic projects, create a single server file in the parent src folder
+          await createFile(`${projectName}/src/server.${ext}`, boilerplate);
+          console.log(chalk.green("Created server.js"));
+          progressCallback();
+        } else {
+          // For microservices, create a server file for each module inside its own src folder
+          for (const module of modules) {
+            await createFile(`${projectName}/${module}/src/server.${ext}`, boilerplate);
+            console.log(chalk.green(`Created server.js for module ${module}`));
+            progressCallback();
+          }
+        }
         if (language === 'TypeScript') {
             await createFile(`${projectName}/tsconfig.json`, tsConfig);
             console.log(chalk.green("Created tsconfig.json"));

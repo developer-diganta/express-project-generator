@@ -153,7 +153,7 @@ async function main() {
         await createDirectories(projectName, updateProgress, modules);
         await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
         await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
-        await setupTests(projectName, testLibraries, updateProgress,language);
+        await setupTests(projectName, testLibraries, updateProgress,language, modules);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
         console.log(chalk.green.bold(`Version: ${version}`));
