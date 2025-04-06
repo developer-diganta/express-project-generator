@@ -100,7 +100,16 @@ async function main() {
             message: 'Which test framework would you like to use?',
             choices: ['Jest', 'Mocha'],
             when: (answers) => answers.addTests
-        }
+        },
+        {
+            type: 'list',
+            name: 'installjsonwebtoken',
+            message:'Would you like to install jsonwebtoken for authentication?',
+            choices: ['JWT'],
+            default: 'JWT',
+        },
+
+
     ]);
 
     const projectName = responses.projectName;
@@ -117,11 +126,14 @@ async function main() {
 
     // Parse modules
     const modules = responses.modules ? responses.modules.split(',').map(m => m.trim()) : [];
+    // const includeAuthentication = responses.addauthentication
+    const installJsonwebtoken = responses.installjsonwebtoken
 
     // Calculate total steps based on test selection
     const TEST_STEPS = [testLibraries.jest, testLibraries.mocha].filter(Boolean).length * 2;
+    const AUTH_STEPS = installJsonwebtoken === 'JWT' ? 2 : 0;
     const TS_STEPS = language === 'TypeScript' ? 2 : 0; // tsconfig + build script
-    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + TS_STEPS + 1;
+    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + 1;
 
     let completedSteps = 0;
     let lastPercentage = -1;
@@ -137,9 +149,9 @@ async function main() {
 
     try {
         await initializeProject(projectName, updateProgress);
-        await installDependencies(projectName, testLibraries, language);
+        await installDependencies(projectName, testLibraries, installJsonwebtoken, language);
         await createDirectories(projectName, updateProgress, modules);
-        await createFiles(projectName, updateProgress, language, modules);
+        await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
         await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
         await setupTests(projectName, testLibraries, updateProgress,language);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
