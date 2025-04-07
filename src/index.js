@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const createDirectories = require("./bin/createDirectories");
 const setupTests = require("./bin/setupTests");
 const createFiles = require("./bin/createFiles");
@@ -32,6 +30,19 @@ if (args.includes('--version')) {
 
 async function main() {
     const responses = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'architecture',
+            message: 'Choose project architecture:',
+            choices: ['Monolithic', 'Microservices'],
+            default: 'Monolithic'
+        },
+        {
+            type: 'input',
+            name: 'modules',
+            message: 'Enter module names (comma-separated):',
+            when: (answers) => answers.architecture === 'Microservices'
+        },
         {
             type: 'input',
             name: 'projectName',
@@ -117,6 +128,8 @@ async function main() {
         mocha: responses.testFramework === 'Mocha'
     };
 
+    // Parse modules
+    const modules = responses.modules ? responses.modules.split(',').map(m => m.trim()) : [];
     // const includeAuthentication = responses.addauthentication
     const installJsonwebtoken = responses.installjsonwebtoken
     const addDatabase = responses.addDatabase;
@@ -141,12 +154,12 @@ async function main() {
     };
 
     try {
-        await initializeProject(projectName,updateProgress);
-        await installDependencies(projectName, testLibraries ,installJsonwebtoken, language, addDatabase);
-        await createDirectories(projectName, updateProgress);
-        await createFiles(projectName, updateProgress,language,installJsonwebtoken ,addDatabase);
-        await setupScripts(projectName,authorName,version , description,license,start, testLibraries,updateProgress, language);
-        await setupTests(projectName , testLibraries ,updateProgress, language);
+        await initializeProject(projectName, updateProgress);
+        await installDependencies(projectName, testLibraries, installJsonwebtoken, language ,addDatabase);
+        await createDirectories(projectName, updateProgress, modules);
+        await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken ,addDatabase);
+        await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
+        await setupTests(projectName, testLibraries, updateProgress,language, modules);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
         console.log(chalk.green.bold(`Version: ${version}`));
