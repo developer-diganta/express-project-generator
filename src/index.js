@@ -33,6 +33,19 @@ if (args.includes('--version')) {
 async function main() {
     const responses = await inquirer.prompt([
         {
+            type: 'list',
+            name: 'architecture',
+            message: 'Choose project architecture:',
+            choices: ['Monolithic', 'Microservices'],
+            default: 'Monolithic'
+        },
+        {
+            type: 'input',
+            name: 'modules',
+            message: 'Enter module names (comma-separated):',
+            when: (answers) => answers.architecture === 'Microservices'
+        },
+        {
             type: 'input',
             name: 'projectName',
             message: 'Enter Project Name:',
@@ -115,6 +128,8 @@ async function main() {
         mocha: responses.testFramework === 'Mocha'
     };
 
+    // Parse modules
+    const modules = responses.modules ? responses.modules.split(',').map(m => m.trim()) : [];
     // const includeAuthentication = responses.addauthentication
     const installJsonwebtoken = responses.installjsonwebtoken
 
@@ -138,13 +153,12 @@ async function main() {
     };
 
     try {
-        await initializeProject(projectName,updateProgress);
-        await installDependencies(projectName, testLibraries ,installJsonwebtoken, language);
-        await createDirectories(projectName, updateProgress);
-        await createFiles(projectName, updateProgress,language,installJsonwebtoken);
-        await setupScripts(projectName,authorName,version , description,license,start, testLibraries,updateProgress, language);
-        await setupTests(projectName , testLibraries ,updateProgress, language);
-        
+        await initializeProject(projectName, updateProgress);
+        await installDependencies(projectName, testLibraries, installJsonwebtoken, language);
+        await createDirectories(projectName, updateProgress, modules);
+        await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
+        await setupScripts(projectName, authorName, version, description, license, start, testLibraries, updateProgress, language);
+        await setupTests(projectName, testLibraries, updateProgress, language, modules);
         await setupDocker(projectName, updateProgress);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
