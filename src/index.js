@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+const setupDocker = require("./bin/setupDocker");
 const createDirectories = require("./bin/createDirectories");
 const setupTests = require("./bin/setupTests");
 const createFiles = require("./bin/createFiles");
@@ -108,10 +108,14 @@ async function main() {
             choices: ['JWT'],
             default: 'JWT',
         },
-
-
+        {
+            type: 'confirm',
+            name: 'addDocker',
+            message: 'Would you like to add Docker configuration?',
+            default: true
+        },
+        
     ]);
-
     const projectName = responses.projectName;
     const language = responses.language;
     const authorName = responses.authorName;
@@ -133,7 +137,8 @@ async function main() {
     const TEST_STEPS = [testLibraries.jest, testLibraries.mocha].filter(Boolean).length * 2;
     const AUTH_STEPS = installJsonwebtoken === 'JWT' ? 2 : 0;
     const TS_STEPS = language === 'TypeScript' ? 2 : 0; // tsconfig + build script
-    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + 1;
+    const DOCKER_STEPS = responses.addDocker ? 3 : 0;
+    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + DOCKER_STEPS + 1;
 
     let completedSteps = 0;
     let lastPercentage = -1;
@@ -152,8 +157,9 @@ async function main() {
         await installDependencies(projectName, testLibraries, installJsonwebtoken, language);
         await createDirectories(projectName, updateProgress, modules);
         await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
-        await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
-        await setupTests(projectName, testLibraries, updateProgress,language, modules);
+        await setupScripts(projectName, authorName, version, description, license, start, testLibraries, updateProgress, language);
+        await setupTests(projectName, testLibraries, updateProgress, language, modules);
+        await setupDocker(projectName, updateProgress);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
         console.log(chalk.green.bold(`Version: ${version}`));
