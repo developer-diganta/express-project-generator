@@ -1,9 +1,25 @@
 <p align="center">
-    <h1 align="center"/>Express Project Generator</h1>
-  </p>
-  
-  
-  **Express Project Generator helps you generate a skeletal structure for your  express js project. Made with nodejs.**
+    <h1 align="center">Express Project Generator</h1>
+</p>
+
+**Express Project Generator helps you generate a secure Express.js project structure with best practices.**
+
+## Features
+- Generates basic Express project structure
+- Optional JWT authentication support  
+- Optional Helmet security middleware
+- TypeScript support
+- Test framework integration (Jest/Mocha)
+- Automatic package.json configuration
+
+## Security Features
+When using the Helmet option, your project will include:
+- Security HTTP headers
+- Content Security Policy
+- XSS Protection  
+- NoSniff
+- Frameguard
+- Hide Powered-By
   
 
 ## Using express project generator

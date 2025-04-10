@@ -15,7 +15,7 @@ const chalk = require("chalk")
  * @param {string} start The start of the package
  */
 
-const setupScripts = async (projectName,authorName,version , description,license,start, testLibraries, updateProgress,language) => {
+const setupScripts = async (projectName,authorName,version , description,license,start, testLibraries, updateProgress,language, installHelmet) => {
     try {
         const script = await readFile(`${projectName}/package.json`);
         const parsedScript = JSON.parse(script);
@@ -44,6 +44,15 @@ const setupScripts = async (projectName,authorName,version , description,license
         }
         parsedScript.scripts.dev = "nodemon src/server.js";
         parsedScript.scripts.start = start;
+
+        if (installHelmet) {
+            parsedScript.dependencies = parsedScript.dependencies || {};
+            parsedScript.dependencies.helmet = "^6.1.5";
+            if (language === 'TypeScript') {
+                parsedScript.devDependencies = parsedScript.devDependencies || {};
+                parsedScript.devDependencies['@types/helmet'] = "^6.1.0";
+            }
+        }
 
         await createFile(`${projectName}/package.json`, JSON.stringify(parsedScript, null, 2));
         console.log(chalk.green("Setup scripts successfully!"));
