@@ -4,10 +4,11 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = (installJsonwebtoken) =>  `
+const boilerplateServerCode = (installJsonwebtoken, installHelmet) =>  `
 const express = require('express');
 const cors = require('cors');
 ${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
+${installHelmet ? "const helmet = require('helmet');" : ''}
 
 require('dotenv').config(); // Load environment variables from .env file
 
@@ -15,7 +16,8 @@ const app = express(); // Create an Express.js app
 const PORT = process.env.PORT || 3000; // Set the port for the server
 
 // Middlewares
-app.use(cors()); // Enable CORS
+${installHelmet ? "app.use(helmet()); // Security headers" : ''}
+app.use(cors()); // Enable CORS  
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 app.use(express.static('static')); // Serve static files from 'static' folder
@@ -60,16 +62,18 @@ const tsConfig = `{
   }
 }`;
   
-const tsBoilerplate = (installJsonwebtoken) =>`import express from 'express';
+const tsBoilerplate = (installJsonwebtoken, installHelmet) =>`import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 ${installJsonwebtoken === 'JWT' ?  "import jwt from 'jsonwebtoken';":""} 
+${installHelmet ? "import helmet from 'helmet';" : ""}
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+${installHelmet ? "app.use(helmet());" : ""}
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -90,10 +94,10 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-async function createFiles(projectName, progressCallback, language, modules = [], installJsonwebtoken) {
+async function createFiles(projectName, progressCallback, language, modules = [], installJsonwebtoken, installHelmet = false) {
     try {
         const ext = language === 'TypeScript' ? 'ts' : 'js';
-        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken) : boilerplateServerCode(installJsonwebtoken);
+        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken, installHelmet) : boilerplateServerCode(installJsonwebtoken, installHelmet);
         // Create module route files
         for (const module of modules) {
           const moduleRoutePath = `${projectName}/${module}/src/routes/${module}Routes.${ext}`;
