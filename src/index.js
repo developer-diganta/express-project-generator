@@ -111,6 +111,12 @@ async function main() {
             name:'addDatabase',
             message:'Would you like to add a database?',
             choices: ['MongoDB']
+        },
+        {
+            type: 'confirm',
+            name: 'addDocker',
+            message: 'Would you like to add Docker configuration?',
+            default: true,
         }
 
 
@@ -139,7 +145,8 @@ async function main() {
     const AUTH_STEPS = installJsonwebtoken === 'JWT' ? 2 : 0;
     const DB_STEPS = addDatabase === 'MongoDB' ? 2 : 0; // MongoDB setup steps 
     const TS_STEPS = language === 'TypeScript' ? 2 : 0; // tsconfig + build script
-    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + DB_STEPS + 1;
+    const DOCKER_STEPS = responses.addDocker ? 3 : 0;
+    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + DB_STEPS + DOCKER_STEPS + 1;
 
     let completedSteps = 0;
     let lastPercentage = -1;

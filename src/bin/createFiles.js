@@ -92,10 +92,64 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-async function createFiles(projectName, progressCallback,language ,installJsonwebtoken , addDatabase) {
+const dbConfig = (language) => `
+${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('MongoDB connected successfully');
+    } catch (error) {
+        console.error('MongoDB connection error:', error);
+        process.exit(1);
+    }
+};
+
+module.exports = connectDB;
+`;
+
+const userModel = (language) => `
+${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
+
+const userSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', userSchema);
+`;
+
+async function createFiles(projectName, progressCallback,language ,modules = [],installJsonwebtoken , addDatabase) {
     try {
         const ext = language === 'TypeScript' ? 'ts' : 'js';
         const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken,addDatabase) : boilerplateServerCode(installJsonwebtoken ,addDatabase);
+        for (const module of modules) {
+          const moduleRoutePath = `${projectName}/${module}/src/routes/${module}Routes.${ext}`;
+          const moduleBoilerplate = language === 'TypeScript' ?
+              `import express from 'express';\nconst router = express.Router();\n\nexport default router;` :
+              `const express = require('express');\nconst router = express.Router();\n\nmodule.exports = router;`;
+          
+          await createFile(moduleRoutePath, moduleBoilerplate);
+          console.log(chalk.green(`Created ${module} routes`));
+          progressCallback();
+        }
+  
+        if (modules.length === 0) {
+          // For monolithic projects, create a single server file in the parent src folder
+          await createFile(`${projectName}/src/server.${ext}`, boilerplate);
+          console.log(chalk.green("Created server.js"));
+          progressCallback();
+        } else {
+          // For microservices, create a server file for each module inside its own src folder
+          for (const module of modules) {
+            await createFile(`${projectName}/${module}/src/server.${ext}`, boilerplate);
+            console.log(chalk.green(`Created server.js for module ${module}`));
+            progressCallback();
+          }
+        }
         await createFile(`${projectName}/src/server.${ext}`, boilerplate);
         console.log(chalk.green("Created server.js"));
         progressCallback();
