@@ -53,6 +53,7 @@ const setupScripts = async (projectName,authorName,version , description,license
                 parsedScript.devDependencies['@types/helmet'] = "^6.1.0";
             }
         }
+        // Ensure that the package.json file is updated with the new dependencies
 
         await createFile(`${projectName}/package.json`, JSON.stringify(parsedScript, null, 2));
         console.log(chalk.green("Setup scripts successfully!"));
