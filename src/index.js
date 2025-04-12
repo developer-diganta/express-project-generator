@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const createDirectories = require("./bin/createDirectories");
 const setupTests = require("./bin/setupTests");
 const createFiles = require("./bin/createFiles");
@@ -167,6 +168,7 @@ async function main() {
         await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken ,addDatabase);
         await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
         await setupTests(projectName, testLibraries, updateProgress,language, modules);
+        await setupDocker(projectName, updateProgress);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
         console.log(chalk.green.bold(`Version: ${version}`));
