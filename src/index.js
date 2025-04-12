@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const setupDocker = require("./bin/setupDocker");
 const createDirectories = require("./bin/createDirectories");
 const setupTests = require("./bin/setupTests");
 const createFiles = require("./bin/createFiles");
@@ -119,8 +120,6 @@ async function main() {
             message: 'Would you like to add Docker configuration?',
             default: true,
         }
-
-
     ]);
 
     const projectName = responses.projectName;
