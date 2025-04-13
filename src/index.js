@@ -109,13 +109,19 @@ async function main() {
             default: 'JWT',
         },
         {
+            type:'list',
+            name:'addDatabase',
+            message:'Would you like to add a database?',
+            choices: ['MongoDB']
+        },
+        {
             type: 'confirm',
             name: 'addDocker',
             message: 'Would you like to add Docker configuration?',
-            default: true
-        },
-        
+            default: true,
+        }
     ]);
+
     const projectName = responses.projectName;
     const language = responses.language;
     const authorName = responses.authorName;
@@ -132,13 +138,15 @@ async function main() {
     const modules = responses.modules ? responses.modules.split(',').map(m => m.trim()) : [];
     // const includeAuthentication = responses.addauthentication
     const installJsonwebtoken = responses.installjsonwebtoken
+    const addDatabase = responses.addDatabase;
 
     // Calculate total steps based on test selection
     const TEST_STEPS = [testLibraries.jest, testLibraries.mocha].filter(Boolean).length * 2;
     const AUTH_STEPS = installJsonwebtoken === 'JWT' ? 2 : 0;
+    const DB_STEPS = addDatabase === 'MongoDB' ? 2 : 0; // MongoDB setup steps 
     const TS_STEPS = language === 'TypeScript' ? 2 : 0; // tsconfig + build script
     const DOCKER_STEPS = responses.addDocker ? 3 : 0;
-    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + DOCKER_STEPS + 1;
+    const TOTAL_STEPS = 2 + 8 + 2 + TEST_STEPS + AUTH_STEPS + TS_STEPS + DB_STEPS + DOCKER_STEPS + 1;
 
     let completedSteps = 0;
     let lastPercentage = -1;
@@ -154,11 +162,11 @@ async function main() {
 
     try {
         await initializeProject(projectName, updateProgress);
-        await installDependencies(projectName, testLibraries, installJsonwebtoken, language);
+        await installDependencies(projectName, testLibraries, installJsonwebtoken, language ,addDatabase);
         await createDirectories(projectName, updateProgress, modules);
-        await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
-        await setupScripts(projectName, authorName, version, description, license, start, testLibraries, updateProgress, language);
-        await setupTests(projectName, testLibraries, updateProgress, language, modules);
+        await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken ,addDatabase);
+        await setupScripts(projectName,authorName,version , description,license,start, testLibraries, updateProgress,language);
+        await setupTests(projectName, testLibraries, updateProgress,language, modules);
         await setupDocker(projectName, updateProgress);
         console.log(chalk.blue(`\n[100%] `) + chalk.green.bold('Project setup completed!'));
         console.log(chalk.green.bold(`Author: ${authorName}`)); 
