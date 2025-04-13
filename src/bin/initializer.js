@@ -30,9 +30,10 @@ const initializeProject = async (projectName, progressCallback) => {
  * 
  * @param {string} projectName 
  */
-const installDependencies = async (projectName, testLibraries ,installJsonwebtoken,language) => {
+const installDependencies = async (projectName, testLibraries ,installJsonwebtoken,language,dependencies) => {
     try {
-        let cmd = `npm install express dotenv cors`;
+        let cmd = `npm install `;
+        cmd+= dependencies;
         if (language === 'TypeScript') {
             cmd += ` @types/express @types/cors @types/node typescript ts-node`;
         }

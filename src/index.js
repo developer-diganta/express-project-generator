@@ -8,6 +8,7 @@ const scriptName = process.argv[1].split(path.sep).pop();
 const { initializeProject, installDependencies } = require("./bin/initializer");
 const setupScripts = require("./bin/setupScripts");
 const chalk = require("chalk");
+const { promptDependencies } = require("./utils/promptDependencies");
 const inquirer = require("inquirer").default;
 
 // Remove test library flags from command args
@@ -114,8 +115,24 @@ async function main() {
             message: 'Would you like to add Docker configuration?',
             default: true
         },
+        {
+            type:"confirm",
+            name:"askDependencies",
+            message:"Would you like to install additional dependencies?",
+            default: false
+        },
         
     ]);
+    let dependencies;
+    if(responses.askDependencies){
+       dependencies = await promptDependencies()
+       dependencies = dependencies.join(" ")
+    }
+
+
+
+
+
     const projectName = responses.projectName;
     const language = responses.language;
     const authorName = responses.authorName;
@@ -154,7 +171,7 @@ async function main() {
 
     try {
         await initializeProject(projectName, updateProgress);
-        await installDependencies(projectName, testLibraries, installJsonwebtoken, language);
+        await installDependencies(projectName, testLibraries, installJsonwebtoken, language,dependencies );
         await createDirectories(projectName, updateProgress, modules);
         await createFiles(projectName, updateProgress, language, modules, installJsonwebtoken);
         await setupScripts(projectName, authorName, version, description, license, start, testLibraries, updateProgress, language);
