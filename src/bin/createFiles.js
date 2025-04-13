@@ -122,6 +122,69 @@ const userSchema = new mongoose.Schema({
 module.exports = mongoose.model('User', userSchema);
 `;
 
+const controller = (language) => `
+${language === 'TypeScript'  ? "import User from '../model/userModel';" : "const User = require('../model/userModel');"}
+export const getUsers = async (req: Request, res: Response) => {
+  const users = await User.find();
+  res.json(users);
+};
+
+export const createUser = async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  const newUser = await User.create({ name, email, password });
+  res.status(201).json(newUser);
+};
+`
+
+const route = (language) => `
+${language === 'TypeScript'  ? "import express from 'express';" : "const express = require('express');"}
+${language === 'TypeScript'  ? "import { getUsers, createUser } from '../controller/userController';" : "const { getUsers, createUser } = require('../controller/userController');"}
+const router = express.Router();
+router.get("/", getUsers);
+router.post("/", createUser);
+
+module.exports = router;
+`
+
+const auth =  `
+const authMiddleware = (req, res, next) => {
+  // Placeholder for authentication logic
+  console.log("Auth middleware hit");
+  next();
+};
+
+module.exports = authMiddleware;
+`
+const errorMiddleware = `
+const errorHandler = (err, req, res, next) => {
+  const statusCode = res.statusCode || 500;
+  res.status(statusCode).json({
+    message: err.message,
+    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
+  });
+};
+
+module.exports = errorHandler;
+`
+const services = (language) => `
+${language === 'TypeScript'  ? "import User, { IUser } from '../model/userModel';" : "const User = require('../model/userModel');"}
+const getAllUsers = async () => {
+  const users = await User.find();
+  return users;
+};
+
+const createUserService = async (name, email, password) => {
+  const user = await User.create({ name, email, password });
+  return user;
+};
+
+module.exports = {
+  getAllUsers,
+  createUserService,
+};
+`
+
+
 async function createFiles(projectName, progressCallback,language ,modules = [],installJsonwebtoken , addDatabase) {
     try {
         const ext = language === 'TypeScript' ? 'ts' : 'js';
@@ -153,6 +216,7 @@ async function createFiles(projectName, progressCallback,language ,modules = [],
         await createFile(`${projectName}/src/server.${ext}`, boilerplate);
         console.log(chalk.green("Created server.js"));
         progressCallback();
+
         if (language === 'TypeScript') {
             await createFile(`${projectName}/tsconfig.json`, tsConfig);
             console.log(chalk.green("Created tsconfig.json"));
@@ -162,6 +226,35 @@ async function createFiles(projectName, progressCallback,language ,modules = [],
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
         progressCallback();
+
+        await createFile(`${projectName}/src/configs/config.${ext}`,dbConfig(language))
+        console.log(chalk.green(`Created config.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/models/userModel.${ext}`,userModel(language))
+        console.log(chalk.green(`Created userModel.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/controllers/userController.${ext}`,controller(language))
+        console.log(chalk.green(`Created userController.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/middlewares/authMiddleware.${ext}`,auth)
+        console.log(chalk.green(`Created authMiddleware.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/middlewares/errorMiddleware.${ext}`,errorMiddleware)
+        console.log(chalk.green(`Created errorMiddleware.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/routes/userRouter.${ext}`,route(language))
+        console.log(chalk.green(`Created route.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/services/userServices.${ext}`,services(language))
+        console.log(chalk.green(`Created userServices.${ext}`));
+        progressCallback();
+
         console.log(chalk.green('Project generated successfully!'));
     } catch (error) {
         console.error(chalk.red(`Error creating files: ${error}`));
