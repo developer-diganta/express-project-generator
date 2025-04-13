@@ -4,11 +4,6 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = (installJsonwebtoken, installHelmet) =>  `
-const express = require('express');
-const cors = require('cors');
-${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
-${installHelmet ? "const helmet = require('helmet');" : ''}
 
 require('dotenv').config(); // Load environment variables from .env file
 
@@ -62,11 +57,6 @@ const tsConfig = `{
   }
 }`;
   
-const tsBoilerplate = (installJsonwebtoken, installHelmet) =>`import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-${installJsonwebtoken === 'JWT' ?  "import jwt from 'jsonwebtoken';":""} 
-${installHelmet ? "import helmet from 'helmet';" : ""}
 
 dotenv.config();
 
@@ -94,11 +84,6 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-async function createFiles(projectName, progressCallback, language, modules = [], installJsonwebtoken, installHelmet = false) {
-    try {
-        const ext = language === 'TypeScript' ? 'ts' : 'js';
-        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken, installHelmet) : boilerplateServerCode(installJsonwebtoken, installHelmet);
-        // Create module route files
         for (const module of modules) {
           const moduleRoutePath = `${projectName}/${module}/src/routes/${module}Routes.${ext}`;
           const moduleBoilerplate = language === 'TypeScript' ?
@@ -123,11 +108,15 @@ async function createFiles(projectName, progressCallback, language, modules = []
             progressCallback();
           }
         }
+        await createFile(`${projectName}/src/server.${ext}`, boilerplate);
+        console.log(chalk.green("Created server.js"));
+        progressCallback();
         if (language === 'TypeScript') {
             await createFile(`${projectName}/tsconfig.json`, tsConfig);
             console.log(chalk.green("Created tsconfig.json"));
             progressCallback();
         }
+        
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
         progressCallback();

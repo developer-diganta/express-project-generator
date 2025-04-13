@@ -84,7 +84,7 @@ To push your changes, run the following command in your terminal:
 
 9. Create a PR.
 
-## Alternatively Using GitHub Deslktop:
+## Alternatively Using GitHub Desktop:
 1. Open GitHub Desktop and log in to your GitHub account.
 
 2. Make sure you are on the "Current Repository" view. If not, go to "File" and select "Add Local Repository" to add your repository.

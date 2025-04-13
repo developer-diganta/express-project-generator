@@ -17,6 +17,7 @@ const createSubdirectories=async(basePath, progressCallback) =>{
         `${basePath}/routes`,
         `${basePath}/configs`,
         `${basePath}/middlewares`,
+        `${basePath}/src/models`,
         `${basePath}/utils`,
         `${basePath}/static`
     ];
