@@ -111,6 +111,7 @@ export default app;`;
         await createFile(`${projectName}/src/server.${ext}`, boilerplate);
         console.log(chalk.green("Created server.js"));
         progressCallback();
+
         if (language === 'TypeScript') {
             await createFile(`${projectName}/tsconfig.json`, tsConfig);
             console.log(chalk.green("Created tsconfig.json"));
@@ -120,6 +121,35 @@ export default app;`;
         await createFile(`${projectName}/readme.md`, '# Project created using express-app-generator');
         console.log(chalk.green("Created readme.md"));
         progressCallback();
+
+        await createFile(`${projectName}/src/configs/config.${ext}`,dbConfig(language))
+        console.log(chalk.green(`Created config.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/models/userModel.${ext}`,userModel(language))
+        console.log(chalk.green(`Created userModel.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/controllers/userController.${ext}`,controller(language))
+        console.log(chalk.green(`Created userController.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/middlewares/authMiddleware.${ext}`,auth)
+        console.log(chalk.green(`Created authMiddleware.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/middlewares/errorMiddleware.${ext}`,errorMiddleware)
+        console.log(chalk.green(`Created errorMiddleware.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/routes/userRouter.${ext}`,route(language))
+        console.log(chalk.green(`Created route.${ext}`));
+        progressCallback();
+
+        await createFile(`${projectName}/src/services/userServices.${ext}`,services(language))
+        console.log(chalk.green(`Created userServices.${ext}`));
+        progressCallback();
+
         console.log(chalk.green('Project generated successfully!'));
     } catch (error) {
         console.error(chalk.red(`Error creating files: ${error}`));
