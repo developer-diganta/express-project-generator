@@ -4,11 +4,6 @@ const chalk = require("chalk");
 /*
  * Boilerplate code for the main server file 'server.js'.
 */
-const boilerplateServerCode = (installJsonwebtoken ,addDatabase) =>  `
-const express = require('express');
-const cors = require('cors');
-${installJsonwebtoken === 'JWT' ? "const jwt = require('jsonwebtoken');" : ''}
-${addDatabase === 'MongoDB' ? "const mongoose = require('mongoose');" : ''}
 
 require('dotenv').config(); // Load environment variables from .env file
 
@@ -16,7 +11,8 @@ const app = express(); // Create an Express.js app
 const PORT = process.env.PORT || 3000; // Set the port for the server
 
 // Middlewares
-app.use(cors()); // Enable CORS
+${installHelmet ? "app.use(helmet()); // Security headers" : ''}
+app.use(cors()); // Enable CORS  
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 app.use(express.static('static')); // Serve static files from 'static' folder
@@ -61,17 +57,13 @@ const tsConfig = `{
   }
 }`;
   
-const tsBoilerplate = (installJsonwebtoken,addDatabase) =>`import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-${installJsonwebtoken === 'JWT' ?  "import jwt from 'jsonwebtoken';":""} 
-${addDatabase === 'MongoDB' ? "import mongoose from 'mongoose';" : ''}
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+${installHelmet ? "app.use(helmet());" : ""}
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -92,103 +84,6 @@ app.listen(PORT, () => {
 
 export default app;`;
 
-const dbConfig = (language) => `
-${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('MongoDB connected successfully');
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-        process.exit(1);
-    }
-};
-
-module.exports = connectDB;
-`;
-
-const userModel = (language) => `
-${language === 'TypeScript'  ? "import mongoose from 'mongoose'" : "const  mongoose = require('mongoose');"}
-
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
-}, { timestamps: true });
-
-module.exports = mongoose.model('User', userSchema);
-`;
-
-const controller = (language) => `
-${language === 'TypeScript'  ? "import User from '../model/userModel';" : "const User = require('../model/userModel');"}
-export const getUsers = async (req: Request, res: Response) => {
-  const users = await User.find();
-  res.json(users);
-};
-
-export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-  const newUser = await User.create({ name, email, password });
-  res.status(201).json(newUser);
-};
-`
-
-const route = (language) => `
-${language === 'TypeScript'  ? "import express from 'express';" : "const express = require('express');"}
-${language === 'TypeScript'  ? "import { getUsers, createUser } from '../controller/userController';" : "const { getUsers, createUser } = require('../controller/userController');"}
-const router = express.Router();
-router.get("/", getUsers);
-router.post("/", createUser);
-
-module.exports = router;
-`
-
-const auth =  `
-const authMiddleware = (req, res, next) => {
-  // Placeholder for authentication logic
-  console.log("Auth middleware hit");
-  next();
-};
-
-module.exports = authMiddleware;
-`
-const errorMiddleware = `
-const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode || 500;
-  res.status(statusCode).json({
-    message: err.message,
-    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
-  });
-};
-
-module.exports = errorHandler;
-`
-const services = (language) => `
-${language === 'TypeScript'  ? "import User, { IUser } from '../model/userModel';" : "const User = require('../model/userModel');"}
-const getAllUsers = async () => {
-  const users = await User.find();
-  return users;
-};
-
-const createUserService = async (name, email, password) => {
-  const user = await User.create({ name, email, password });
-  return user;
-};
-
-module.exports = {
-  getAllUsers,
-  createUserService,
-};
-`
-
-
-async function createFiles(projectName, progressCallback,language ,modules = [],installJsonwebtoken , addDatabase) {
-    try {
-        const ext = language === 'TypeScript' ? 'ts' : 'js';
-        const boilerplate = language === 'TypeScript' ? tsBoilerplate(installJsonwebtoken,addDatabase) : boilerplateServerCode(installJsonwebtoken ,addDatabase);
         for (const module of modules) {
           const moduleRoutePath = `${projectName}/${module}/src/routes/${module}Routes.${ext}`;
           const moduleBoilerplate = language === 'TypeScript' ?
